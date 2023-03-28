@@ -18,8 +18,8 @@ use thiserror::Error;
 use ulid::Ulid;
 
 use super::{
-    Authentication, BrowserSession, CompatSession, CompatSsoLogin, OAuth2Client, OAuth2Session,
-    UpstreamOAuth2Link, UpstreamOAuth2Provider, User, UserEmail,
+    Authentication, BrowserSession, CompatSession, CompatSsoLogin, OAuth2Client, OAuth2Consent,
+    OAuth2Session, UpstreamOAuth2Link, UpstreamOAuth2Provider, User, UserEmail,
 };
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -29,6 +29,7 @@ pub enum NodeType {
     CompatSession,
     CompatSsoLogin,
     OAuth2Client,
+    OAuth2Consent,
     OAuth2Session,
     UpstreamOAuth2Provider,
     UpstreamOAuth2Link,
@@ -53,6 +54,7 @@ impl NodeType {
             NodeType::CompatSession => "compat_session",
             NodeType::CompatSsoLogin => "compat_sso_login",
             NodeType::OAuth2Client => "oauth2_client",
+            NodeType::OAuth2Consent => "oauth2_consent",
             NodeType::OAuth2Session => "oauth2_session",
             NodeType::UpstreamOAuth2Provider => "upstream_oauth2_provider",
             NodeType::UpstreamOAuth2Link => "upstream_oauth2_link",
@@ -68,6 +70,7 @@ impl NodeType {
             "compat_session" => Some(NodeType::CompatSession),
             "compat_sso_login" => Some(NodeType::CompatSsoLogin),
             "oauth2_client" => Some(NodeType::OAuth2Client),
+            "oauth2_consent" => Some(NodeType::OAuth2Consent),
             "oauth2_session" => Some(NodeType::OAuth2Session),
             "upstream_oauth2_provider" => Some(NodeType::UpstreamOAuth2Provider),
             "upstream_oauth2_link" => Some(NodeType::UpstreamOAuth2Link),
@@ -121,6 +124,7 @@ pub enum Node {
     CompatSession(Box<CompatSession>),
     CompatSsoLogin(Box<CompatSsoLogin>),
     OAuth2Client(Box<OAuth2Client>),
+    OAuth2Consent(Box<OAuth2Consent>),
     OAuth2Session(Box<OAuth2Session>),
     UpstreamOAuth2Provider(Box<UpstreamOAuth2Provider>),
     UpstreamOAuth2Link(Box<UpstreamOAuth2Link>),

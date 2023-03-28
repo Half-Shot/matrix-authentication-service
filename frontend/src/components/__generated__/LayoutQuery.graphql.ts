@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c45ed89e7a5d2dbfd7df09b342251f17>>
+ * @generated SignedSource<<99728a11c648b07d8865dca6b13bda08>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,16 +9,16 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type HomeQuery$variables = {};
-export type HomeQuery$data = {
+export type LayoutQuery$variables = {};
+export type LayoutQuery$data = {
   readonly currentUser: {
     readonly id: string;
     readonly username: string;
   } | null;
 };
-export type HomeQuery = {
-  response: HomeQuery$data;
-  variables: HomeQuery$variables;
+export type LayoutQuery = {
+  response: LayoutQuery$data;
+  variables: LayoutQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -54,7 +54,7 @@ return {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "HomeQuery",
+    "name": "LayoutQuery",
     "selections": (v0/*: any*/),
     "type": "RootQuery",
     "abstractKey": null
@@ -63,20 +63,20 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "HomeQuery",
+    "name": "LayoutQuery",
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "ed11a3960d77e44416be48bbade86350",
+    "cacheID": "04a760c44feba28cd40c9ac34234c51c",
     "id": null,
     "metadata": {},
-    "name": "HomeQuery",
+    "name": "LayoutQuery",
     "operationKind": "query",
-    "text": "query HomeQuery {\n  currentUser {\n    id\n    username\n  }\n}\n"
+    "text": "query LayoutQuery {\n  currentUser {\n    id\n    username\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "9746f86ec5c6368af275e5eb2789bff7";
+(node as any).hash = "7aed7e2d4ac8f64f4b0956b4061ad75e";
 
 export default node;

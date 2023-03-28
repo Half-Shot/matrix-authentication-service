@@ -1313,3 +1313,25 @@ mod tests {
         Ok(())
     }
 }
+
+#[tracing::instrument(
+    skip_all,
+    err,
+)]
+pub async fn get_user_password_set_at(
+    executor: impl PgExecutor<'_>,
+    id: Ulid,
+) -> Result<Option<DateTime<Utc>>, sqlx::Error> {
+    Ok(Some(sqlx::query_scalar!(
+        r#"
+            SELECT up.created_at
+            FROM user_passwords up
+            WHERE up.user_id = $1
+            ORDER BY up.created_at DESC
+            LIMIT 1
+        "#,
+        Uuid::from(id),
+    )
+    .fetch_one(executor)
+    .await?))
+}

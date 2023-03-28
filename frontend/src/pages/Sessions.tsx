@@ -18,18 +18,23 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardMedia,
+  Icon,
+  Skeleton,
   Typography,
 } from "@mui/material";
 import { graphql, useLazyLoadQuery } from "react-relay";
-import Grid from "@mui/material/Unstable_Grid2";
 
-import type { HomeQuery } from "./__generated__/HomeQuery.graphql";
+import BrowserSessionList from "../components/BrowserSessionList";
+import CompatSsoLoginList from "../components/CompatSsoLoginList";
+import OAuth2SessionList from "../components/OAuth2SessionList";
 import { NavLink } from "react-router-dom";
 import {
   AppsTwoTone,
   ContactMailTwoTone,
   LockTwoTone,
 } from "@mui/icons-material";
+import { SessionsQuery } from "./__generated__/SessionsQuery.graphql";
 
 const iconFontSize = "inherit";
 
@@ -57,64 +62,43 @@ const cards = [
   },
 ];
 
-const Home: React.FC = () => {
-  const data = useLazyLoadQuery<HomeQuery>(
+const Sessions: React.FC = () => {
+  const data = useLazyLoadQuery<SessionsQuery>(
     graphql`
-      query HomeQuery {
-        currentUser {
+      query SessionsQuery($count: Int!, $cursor: String) {
+        currentBrowserSession {
           id
-          username
+          user {
+            id
+            username
+
+            ...CompatSsoLoginList_user
+            ...BrowserSessionList_user
+            ...OAuth2SessionList_user
+          }
         }
       }
     `,
-    {}
+    { count: 2 }
   );
 
-  if (data.currentUser) {
-    const user = data.currentUser;
+  if (data.currentBrowserSession) {
+    const session = data.currentBrowserSession;
+    const user = session.user;
 
     return (
       <>
-        <Typography variant="h4" align="center">
-          Hello {user.username}!
-        </Typography>
-        <Grid container spacing={2}>
-          {cards.map(({ title, description, link, path, icon }) => (
-            <Grid key={title} xs={12} sm={6} md={4}>
-              <Card>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {title}
-                  </Typography>
-                  <Box sx={{ display: "flex" }}>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ flexGrow: 1 }}
-                    >
-                      {description}
-                    </Typography>
-                    <Box
-                      sx={{ fontSize: "4em", color: "secondary.main", ml: 2 }}
-                    >
-                      {icon}
-                    </Box>
-                  </Box>
-                </CardContent>
-                <CardActions>
-                  <Button component={NavLink} to={path} size="small">
-                    {link}
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <Typography variant="h4">Hello {user.username}!</Typography>
+        <div className="mt-4 grid lg:grid-cols-3 gap-1">
+          <OAuth2SessionList user={user} />
+          <CompatSsoLoginList user={user} />
+          <BrowserSessionList user={user} currentSessionId={session.id} />
+        </div>
       </>
     );
   } else {
-    return <div className="font-bold text-alert">You're not logged in.</div>;
+    return <Skeleton />;
   }
 };
 
-export default Home;
+export default Sessions;

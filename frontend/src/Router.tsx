@@ -17,8 +17,11 @@ import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import Layout from "./components/Layout";
 import LoadingSpinner from "./components/LoadingSpinner";
+import Security from "./pages/Security";
+import Sessions from "./pages/Sessions";
 
 const Home = lazy(() => import("./pages/Home"));
+const PersonalInfo = lazy(() => import("./pages/PersonalInfo"));
 const OAuth2Client = lazy(() => import("./pages/OAuth2Client"));
 const BrowserSession = lazy(() => import("./pages/BrowserSession"));
 
@@ -39,15 +42,23 @@ export const router = createBrowserRouter(
           element: <Home />,
         },
         {
-          path: "dumb",
-          element: <>Hello from another dumb page.</>,
+          path: "personal-info",
+          element: <PersonalInfo />,
         },
         {
-          path: "client/:id",
+          path: "security",
+          element: <Security />,
+        },
+        {
+          path: "sessions",
+          element: <Sessions />,
+        },
+        {
+          path: "clients/:id",
           element: <OAuth2Client />,
         },
         {
-          path: "session/:id",
+          path: "sessions/:id",
           element: <BrowserSession />,
         },
       ],

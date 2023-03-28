@@ -1,4 +1,4 @@
-// Copyright 2021, 2022 The Matrix.org Foundation C.I.C.
+// Copyright 2022 The Matrix.org Foundation C.I.C.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub(self) mod authorization_grant;
-pub(self) mod client;
-pub(self) mod consent;
-pub(self) mod session;
+use chrono::{DateTime, Utc};
+use oauth2_types::scope::Scope;
+use serde::Serialize;
+use ulid::Ulid;
 
-pub use self::{
-    authorization_grant::{AuthorizationCode, AuthorizationGrant, AuthorizationGrantStage, Pkce},
-    client::{Client, InvalidRedirectUriError, JwksOrJwksUri},
-    consent::ClientConsent,
-    session::Session,
-};
+use crate::User;
+
+use super::client::Client;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct ClientConsent {
+    pub id: Ulid,
+    pub user: User,
+    pub client: Client,
+    pub scope: Scope,
+    pub created_at: DateTime<Utc>,
+    pub refreshed_at: Option<DateTime<Utc>>,
+}

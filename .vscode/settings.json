@@ -1,0 +1,13 @@
+{
+    "yaml.schemas": {
+      "https://raw.githubusercontent.com/matrix-org/matrix-authentication-service/master/docs/config.schema.json": "config.yaml"
+    },
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "config.yaml"
+      ],
+      "url": "../docs/config.schema.json"
+    }
+    ]    
+}

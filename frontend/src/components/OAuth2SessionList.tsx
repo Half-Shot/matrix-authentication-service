@@ -46,7 +46,7 @@ const OAuth2SessionList: React.FC<Props> = ({ user }) => {
 
   return (
     <BlockList>
-      <Title>List of OAuth 2.0 sessions:</Title>
+      <Title>Apps with account access:</Title>
       {data.oauth2Sessions.edges.map((n) => (
         <OAuth2Session key={n.cursor} session={n.node} />
       ))}

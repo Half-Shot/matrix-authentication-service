@@ -43,7 +43,7 @@ const OAuth2Session: React.FC<Props> = ({ session }) => {
     <Block>
       <Body>
         <Link
-          to={`/client/${data.client.id}`}
+          to={`/clients/${data.client.id}`}
           className="text-links hover:text-links/75"
         >
           Client ID: <Code>{data.client.clientId}</Code>

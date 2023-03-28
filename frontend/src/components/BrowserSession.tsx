@@ -48,7 +48,7 @@ const BrowserSession: React.FC<Props> = ({ session, isCurrent }) => {
       {isCurrent && <Subtitle>Current session</Subtitle>}
       <Body>
         <Link
-          to={`/session/${data.id}`}
+          to={`/sessions/${data.id}`}
           className="text-links hover:text-links/75"
         >
           Started: <DateTime datetime={createdAt} />

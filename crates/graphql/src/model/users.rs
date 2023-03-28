@@ -17,11 +17,12 @@ use async_graphql::{
     Context, Description, Object, ID,
 };
 use chrono::{DateTime, Utc};
+use mas_storage::user::get_user_password_set_at;
 use sqlx::PgPool;
 
 use super::{
-    compat_sessions::CompatSsoLogin, BrowserSession, Cursor, NodeCursor, NodeType, OAuth2Session,
-    UpstreamOAuth2Link,
+    compat_sessions::CompatSsoLogin, BrowserSession, Cursor, NodeCursor, NodeType, OAuth2Consent,
+    OAuth2Session, UpstreamOAuth2Link,
 };
 
 #[derive(Description)]
@@ -253,6 +254,54 @@ impl User {
         .await
     }
 
+    /// Get the list of OAuth 2.0 clients that user has granted consent to, chronologically sorted
+    async fn oauth2_client_consents(
+        &self,
+        ctx: &Context<'_>,
+
+        #[graphql(desc = "Returns the elements in the list that come after the cursor.")]
+        after: Option<String>,
+        #[graphql(desc = "Returns the elements in the list that come before the cursor.")]
+        before: Option<String>,
+        #[graphql(desc = "Returns the first *n* elements from the list.")] first: Option<i32>,
+        #[graphql(desc = "Returns the last *n* elements from the list.")] last: Option<i32>,
+    ) -> Result<Connection<Cursor, OAuth2Consent>, async_graphql::Error> {
+        let database = ctx.data::<PgPool>()?;
+
+        query(
+            after,
+            before,
+            first,
+            last,
+            |after, before, first, last| async move {
+                let mut conn = database.acquire().await?;
+                let after_id = after
+                    .map(|x: OpaqueCursor<NodeCursor>| x.extract_for_type(NodeType::OAuth2Session))
+                    .transpose()?;
+                let before_id = before
+                    .map(|x: OpaqueCursor<NodeCursor>| x.extract_for_type(NodeType::OAuth2Session))
+                    .transpose()?;
+
+                let (has_previous_page, has_next_page, edges) =
+                    mas_storage::oauth2::consent::get_paginated_user_client_consents(
+                        &mut conn, &self.0, before_id, after_id, first, last,
+                    )
+                    .await?;
+
+                let mut connection = Connection::new(has_previous_page, has_next_page);
+                connection.edges.extend(edges.into_iter().map(|c| {
+                    Edge::new(
+                        OpaqueCursor(NodeCursor(NodeType::OAuth2Consent, c.id)),
+                        OAuth2Consent(c),
+                    )
+                }));
+
+                Ok::<_, async_graphql::Error>(connection)
+            },
+        )
+        .await
+    }
+
     /// Get the list of upstream OAuth 2.0 links
     async fn upstream_oauth2_links(
         &self,
@@ -303,6 +352,15 @@ impl User {
             },
         )
         .await
+    }
+
+    /// When the user's password was last set. Is `null` if the user has never set a password
+    async fn password_set_at(&self, ctx: &Context<'_>) -> Result<Option<DateTime<Utc>>, async_graphql::Error> {
+        let database = ctx.data::<PgPool>()?;
+        let mut conn = database.acquire().await?;
+        get_user_password_set_at(&mut conn, self.0.id).await.map_err(|_| -> async_graphql::Error {
+            async_graphql::Error::new("Failed to get user password set at")
+        })
     }
 }
 

@@ -27,6 +27,7 @@ use async_graphql::{
     Context, Description, EmptyMutation, EmptySubscription, ID,
 };
 use mas_axum_utils::SessionInfo;
+use model::OAuth2Consent;
 use sqlx::PgPool;
 
 use self::model::{
@@ -98,6 +99,21 @@ impl RootQuery {
         let client = mas_storage::oauth2::client::lookup_client(&mut conn, id).await?;
 
         Ok(client.map(OAuth2Client))
+    }
+
+    /// Fetch an OAuth 2.0 consent by its ID.
+    async fn oauth2_consent(
+        &self,
+        ctx: &Context<'_>,
+        id: ID,
+    ) -> Result<Option<OAuth2Consent>, async_graphql::Error> {
+        let id = NodeType::OAuth2Client.extract_ulid(&id)?;
+        let database = ctx.data::<PgPool>()?;
+        let mut conn = database.acquire().await?;
+
+        let client = mas_storage::oauth2::consent::lookup_consent(&mut conn, id).await?;
+
+        Ok(client.map(OAuth2Consent))
     }
 
     /// Fetch a user by its ID.
@@ -282,6 +298,11 @@ impl RootQuery {
                 .oauth2_client(ctx, id)
                 .await?
                 .map(|c| Node::OAuth2Client(Box::new(c))),
+
+            NodeType::OAuth2Consent => self
+                .oauth2_consent(ctx, id)
+                .await?
+                .map(|c| Node::OAuth2Consent(Box::new(c))),
 
             NodeType::UserEmail => self
                 .user_email(ctx, id)

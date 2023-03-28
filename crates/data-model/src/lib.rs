@@ -35,7 +35,7 @@ pub use self::{
         Device,
     },
     oauth2::{
-        AuthorizationCode, AuthorizationGrant, AuthorizationGrantStage, Client,
+        AuthorizationCode, AuthorizationGrant, AuthorizationGrantStage, Client, ClientConsent,
         InvalidRedirectUriError, JwksOrJwksUri, Pkce, Session,
     },
     tokens::{AccessToken, RefreshToken, TokenFormatError, TokenType},
